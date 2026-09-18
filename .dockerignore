@@ -1,0 +1,28 @@
+# Artefatos de build do .NET
+**/bin/
+**/obj/
+**/out/
+**/publicado/
+*.user
+*.suo
+
+# Node
+**/node_modules/
+**/dist/
+**/.vite/
+
+# Git e ferramentas locais
+.git/
+.github/
+.vs/
+.vscode/
+.idea/
+.config/
+
+# Ambiente local (nunca vai para a imagem)
+**/.env
+**/.env.local
+
+# Docs
+*.md
+!README.md

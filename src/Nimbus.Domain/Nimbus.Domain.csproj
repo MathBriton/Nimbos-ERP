@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Camada de dominio: regras de negocio puras.
+    Por decisao arquitetural NAO possui nenhuma dependencia externa
+    (nem EF Core, nem ASP.NET Core) - somente a BCL.
+  -->
+  <PropertyGroup>
+    <RootNamespace>Nimbus.Domain</RootNamespace>
+  </PropertyGroup>
+
+</Project>

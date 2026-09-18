@@ -1,0 +1,105 @@
+# ============================================================================
+# Nimbus ERP - ambiente completo de desenvolvimento.
+#
+#   docker compose up --build
+#
+#   Frontend .... http://localhost:8080
+#   API ......... http://localhost:5080  (docs: /scalar/v1, saude: /health)
+#   SQL Server .. localhost:1433         (sa / valor de MSSQL_SA_PASSWORD)
+# ============================================================================
+
+name: nimbus-erp
+
+services:
+  # --------------------------------------------------------------------------
+  # Banco de dados
+  # --------------------------------------------------------------------------
+  banco:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: nimbus-banco
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-Nimbus@Local123}
+      MSSQL_PID: Developer
+    # A imagem do SQL Server 2022 roda como o usuario nao-root "mssql" (uid
+    # 10001), mas volumes nomeados nascem com dono root - o que faz o setup
+    # falhar com "Access is denied" ao copiar master.mdf. Rodar como root
+    # resolve sem precisar de um container auxiliar so para dar chown.
+    user: "0:0"
+    ports:
+      - "${PORTA_BANCO:-1433}:1433"
+    # Os volumes sao montados nos SUBDIRETORIOS, nunca em /var/opt/mssql
+    # inteiro: cobrir o diretorio raiz esconde arquivos internos da imagem e
+    # o sqlservr quebra com crash no SQLPAL antes de logar qualquer coisa.
+    volumes:
+      - dados-do-banco:/var/opt/mssql/data
+      - logs-do-banco:/var/opt/mssql/log
+      - segredos-do-banco:/var/opt/mssql/secrets
+    healthcheck:
+      # sqlcmd 18 exige -C para confiar no certificado autoassinado do container.
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q 'SELECT 1' || exit 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    restart: unless-stopped
+
+  # --------------------------------------------------------------------------
+  # API (.NET 10)
+  # --------------------------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: src/Nimbus.Api/Dockerfile
+    container_name: nimbus-api
+    depends_on:
+      banco:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_HTTP_PORTS: "8080"
+      ConnectionStrings__NimbusDb: "Server=banco,1433;Database=NimbusErp;User Id=sa;Password=${MSSQL_SA_PASSWORD:-Nimbus@Local123};TrustServerCertificate=True;Encrypt=False;MultipleActiveResultSets=True"
+      Banco__AplicarMigrationsNaSubida: "true"
+      Cors__OrigensPermitidas__0: http://localhost:${PORTA_FRONTEND:-8080}
+      Cors__OrigensPermitidas__1: http://localhost:5173
+    ports:
+      - "${PORTA_API:-5080}:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent http://127.0.0.1:8080/health/pronto > /dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+      start_period: 40s
+    restart: unless-stopped
+
+  # --------------------------------------------------------------------------
+  # Frontend (React + Vite, servido por Nginx)
+  # --------------------------------------------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # O browser fala com a API pela porta publicada no host, nao pela
+        # rede interna do compose - por isso localhost e nao "api".
+        VITE_API_URL: http://localhost:${PORTA_API:-5080}
+        VITE_APP_NOME: Nimbus ERP
+    container_name: nimbus-frontend
+    depends_on:
+      api:
+        condition: service_started
+    ports:
+      - "${PORTA_FRONTEND:-8080}:8080"
+    restart: unless-stopped
+
+volumes:
+  dados-do-banco:
+    name: nimbus-dados-do-banco
+  logs-do-banco:
+    name: nimbus-logs-do-banco
+  segredos-do-banco:
+    name: nimbus-segredos-do-banco

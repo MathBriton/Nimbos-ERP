@@ -1,0 +1,28 @@
+# Normaliza line endings: o repositorio guarda LF, o checkout usa o padrao
+# da plataforma. Evita diffs inteiros so por causa de CRLF no Windows.
+* text=auto eol=lf
+
+# Arquivos que NAO podem ser convertidos.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg text eol=lf
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.pdf binary
+*.xlsx binary
+
+# Scripts e imagens Linux quebram com CRLF.
+*.sh text eol=lf
+Dockerfile text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+nginx.conf text eol=lf
+
+# Arquivos gerados: nao poluir os diffs de pull request.
+frontend/package-lock.json linguist-generated=true -diff
+src/Nimbus.Infrastructure/Persistencia/Migrations/** linguist-generated=true

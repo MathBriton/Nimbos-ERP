@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Nimbus.Api/Nimbus.Api.csproj" />
+    <Project Path="src/Nimbus.Application/Nimbus.Application.csproj" />
+    <Project Path="src/Nimbus.Domain/Nimbus.Domain.csproj" />
+    <Project Path="src/Nimbus.Infrastructure/Nimbus.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Nimbus.Tests/Nimbus.Tests.csproj" />
+  </Folder>
+</Solution>

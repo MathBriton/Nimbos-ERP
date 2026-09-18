@@ -1,0 +1,23 @@
+<Project>
+
+  <!--
+    Configuracoes compartilhadas por todos os projetos da solution.
+    Mantem os .csproj individuais enxutos e garante consistencia de
+    linguagem/analise estatica em todas as camadas.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Precisa ficar em false: o Microsoft.Data.SqlClient nao funciona em
+         Globalization Invariant Mode, e o ERP formata datas/moeda em pt-BR. -->
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+</Project>
