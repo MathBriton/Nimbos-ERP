@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Nimbus.Application.Autenticacao;
 using Nimbus.Application.Common.Abstracoes;
 
 namespace Nimbus.Api.Servicos;
@@ -17,9 +18,9 @@ public sealed class UsuarioAtualHttp : IUsuarioAtual
     private ClaimsPrincipal? Principal => _acessorDeContexto.HttpContext?.User;
 
     public Guid? Id =>
-        Guid.TryParse(Principal?.FindFirstValue(ClaimTypes.NameIdentifier), out var id) ? id : null;
+        Guid.TryParse(Principal?.FindFirstValue(ClaimsDoNimbus.Id), out var id) ? id : null;
 
-    public string? Email => Principal?.FindFirstValue(ClaimTypes.Email);
+    public string? Email => Principal?.FindFirstValue(ClaimsDoNimbus.Email);
 
     public bool EstaAutenticado => Principal?.Identity?.IsAuthenticated ?? false;
 }

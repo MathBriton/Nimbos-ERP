@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Nimbus.Application.Common.Excecoes;
 using Nimbus.Domain.Common;
 
 namespace Nimbus.Api.Common;
@@ -32,6 +33,10 @@ public sealed class ManipuladorGlobalDeExcecoes : IExceptionHandler
 
         var (status, titulo, detalhe) = exception switch
         {
+            ExcecaoDeAutenticacao autenticacao => (
+                StatusCodes.Status401Unauthorized,
+                "Falha na autenticacao",
+                autenticacao.Message),
             ExcecaoDeDominio dominio => (
                 StatusCodes.Status400BadRequest,
                 "Regra de negocio violada",
@@ -49,7 +54,7 @@ public sealed class ManipuladorGlobalDeExcecoes : IExceptionHandler
         }
         else
         {
-            _logger.LogWarning("Regra de negocio violada em {Metodo} {Caminho}: {Mensagem}",
+            _logger.LogWarning("Requisicao recusada em {Metodo} {Caminho}: {Mensagem}",
                 httpContext.Request.Method, httpContext.Request.Path, exception?.Message);
         }
 

@@ -1,0 +1,20 @@
+# O contexto de build deste Dockerfile e ./frontend, entao o .dockerignore da
+# raiz do repositorio NAO se aplica aqui - este arquivo e obrigatorio.
+
+# Critico: sem esta linha o "COPY . ." sobrescreveria o node_modules instalado
+# pelo npm ci dentro do Alpine com o da maquina host (binarios de outro SO).
+node_modules/
+
+dist/
+.vite/
+coverage/
+
+# Ambiente local nunca entra na imagem (a URL da API vem por ARG).
+.env
+.env.local
+.env.*.local
+
+# Nao sao necessarios para gerar o bundle.
+*.md
+.dockerignore
+Dockerfile

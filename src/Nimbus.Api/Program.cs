@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Nimbus.Api.Common;
+using Nimbus.Api.Seguranca;
 using Nimbus.Api.Servicos;
 using Nimbus.Application;
 using Nimbus.Application.Common.Abstracoes;
@@ -24,11 +25,7 @@ builder.Services.AdicionarCamadaDeInfraestrutura(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUsuarioAtual, UsuarioAtualHttp>();
 
-// Sem esquema configurado ainda: o JWT Bearer entra na Sprint 1. O registro
-// aqui mantem o pipeline no formato final e e inofensivo (nenhum esquema
-// padrao => o middleware simplesmente nao autentica ninguem).
-builder.Services.AddAuthentication();
-builder.Services.AddAuthorization();
+builder.Services.AdicionarAutenticacaoJwt(builder.Configuration);
 
 builder.Services
     .AddControllers()
@@ -42,7 +39,8 @@ builder.Services
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<ManipuladorGlobalDeExcecoes>();
 
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(opcoes =>
+    opcoes.AddDocumentTransformer<TransformadorDeSegurancaOpenApi>());
 
 // O frontend roda em outra origem (Vite em dev, Nginx no container).
 var origensPermitidas = builder.Configuration
@@ -54,7 +52,10 @@ builder.Services.AddCors(opcoes => opcoes.AddPolicy(PoliticaDeCorsDoFrontend, po
         .WithOrigins(origensPermitidas)
         .AllowAnyHeader()
         .AllowAnyMethod()
-        .AllowCredentials()));
+        .AllowCredentials()
+        // Sem expor o header, o navegador o esconde do JavaScript e o frontend
+        // nao consegue diferenciar sessao expirada de credencial invalida.
+        .WithExposedHeaders(ConfiguracaoDeAutenticacao.HeaderDeTokenExpirado)));
 
 var app = builder.Build();
 
@@ -102,6 +103,11 @@ app.MapGet("/", () => Results.Ok(new
 if (app.Configuration.GetValue("Banco:AplicarMigrationsNaSubida", defaultValue: true))
 {
     await InicializadorDoBanco.AplicarMigrationsAsync(app.Services).ConfigureAwait(false);
+}
+
+if (app.Configuration.GetValue("Seed:Habilitado", defaultValue: true))
+{
+    await SemeadorDeDados.SemearAsync(app.Services).ConfigureAwait(false);
 }
 
 await app.RunAsync().ConfigureAwait(false);

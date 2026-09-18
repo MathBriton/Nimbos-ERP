@@ -66,6 +66,11 @@ dotnet_diagnostic.CA1000.severity = none
 # exagero para o volume de logs deste projeto.
 dotnet_diagnostic.CA1848.severity = none
 
+# CA1873: acusa argumentos "caros" em logs que podem estar desabilitados. Os
+# nossos argumentos sao leitura de propriedade (usuario.Id), nao computacao -
+# envolver cada LogInformation em if (IsEnabled(...)) so poluiria o codigo.
+dotnet_diagnostic.CA1873.severity = none
+
 # CA1062: os contratos publicos usam ArgumentNullException.ThrowIfNull onde
 # faz sentido; o analisador nao reconhece o helper em todos os cenarios.
 dotnet_diagnostic.CA1062.severity = suggestion

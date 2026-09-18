@@ -1,5 +1,6 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using Nimbus.Domain.Entidades;
 
 namespace Nimbus.Infrastructure.Persistencia;
 
@@ -14,6 +15,8 @@ public class NimbusDbContext : DbContext
         : base(opcoes)
     {
     }
+
+    public DbSet<Usuario> Usuarios => Set<Usuario>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

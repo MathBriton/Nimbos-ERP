@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Nimbus.Application.Autenticacao;
 
 namespace Nimbus.Application;
 
@@ -12,7 +13,8 @@ public static class DependencyInjection
     {
         ArgumentNullException.ThrowIfNull(servicos);
 
-        // Os casos de uso dos modulos de negocio entram a partir da Sprint 1.
+        servicos.AddScoped<ServicoDeAutenticacao>();
+
         return servicos;
     }
 }

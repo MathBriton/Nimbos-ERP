@@ -7,8 +7,9 @@ infraestrutura completa em Docker.
 O planejamento completo (22 sprints, critérios de aceite e dependências entre
 módulos) está em [SDD.md](SDD.md).
 
-> **Status atual:** Sprint 0 concluída — esqueleto do projeto de pé, com API,
-> banco e frontend subindo juntos via `docker compose up`.
+> **Status atual:** Sprint 1 concluída — autenticação JWT funcionando ponta a
+> ponta: login na tela React, rotas protegidas e expiração de token forçando
+> novo login.
 
 ---
 
@@ -20,9 +21,11 @@ módulos) está em [SDD.md](SDD.md).
 | Banco | SQL Server 2022 |
 | Frontend | React 19, TypeScript 6, Vite 8 |
 | UI | PrimeReact 10 (MIT) + PrimeIcons |
+| Roteamento | React Router 8 |
+| Autenticação | JWT Bearer (HMAC-SHA256) + BCrypt |
 | Docs da API | OpenAPI + [Scalar](https://scalar.com) |
 | Infra | Docker + Docker Compose |
-| Testes | xUnit |
+| Testes | xUnit (backend) + Vitest & Testing Library (frontend) |
 
 ---
 
@@ -43,6 +46,23 @@ docker compose up --build
 | Documentação da API | http://localhost:5080/scalar/v1 |
 | Health checks | http://localhost:5080/health |
 | SQL Server | `localhost:1433` (usuário `sa`) |
+
+### Credenciais de acesso
+
+Na primeira subida a API cria o usuário administrador automaticamente:
+
+| E-mail | Senha |
+|---|---|
+| `admin@erp.com` | `Admin123!` |
+
+Os valores vêm da seção `Seed:Administrador` do `appsettings.json` e podem ser
+sobrescritos por variável de ambiente
+(`Seed__Administrador__Email`, `Seed__Administrador__Senha`). Para desligar o
+seed por completo, use `Seed__Habilitado=false`.
+
+> Em qualquer ambiente exposto, troque `Jwt:Segredo` e a senha do seed — ambos
+> têm valores de desenvolvimento versionados no repositório de propósito, para
+> que `docker compose up` funcione sem configuração manual.
 
 Para parar e limpar tudo, inclusive o volume do banco:
 
@@ -157,7 +177,46 @@ npm run dev         # servidor de desenvolvimento
 npm run build       # type-check + build de produção
 npm run lint        # oxlint (falha com qualquer warning)
 npm run typecheck   # apenas o TypeScript
+npm test            # Vitest (jsdom + Testing Library)
+npm run test:watch  # Vitest em modo observador
 ```
+
+---
+
+## Autenticação
+
+Fluxo stateless com JWT Bearer:
+
+```
+POST /api/auth/login   { email, senha }  ->  { token, expiraEm, usuario }
+GET  /api/auth/eu      Authorization: Bearer <token>  ->  { id, nome, email }
+```
+
+O token carrega as claims curtas do padrão JWT (`sub`, `email`, `name`, `jti`)
+em vez das URIs longas de `ClaimTypes` — por isso a API roda com
+`MapInboundClaims = false`. A validação exige explicitamente `HmacSha256`, para
+que um token `alg: none` não seja aceito.
+
+**Decisões de segurança relevantes:**
+
+- Senhas com **BCrypt**, work factor 12. A senha em texto puro nunca é
+  persistida nem registrada em log.
+- E-mail inexistente e senha errada devolvem **a mesma mensagem genérica**, e o
+  caso "e-mail inexistente" ainda gasta uma verificação de hash de isca — sem
+  isso, a diferença de tempo de resposta revelaria quais contas existem.
+- **Bloqueio temporário** de 15 minutos após 5 falhas consecutivas. O bloqueio é
+  checado *antes* da senha, que é justamente o que torna a força bruta barata de
+  recusar.
+- Conta inativa só é revelada a quem já acertou a senha.
+- O 401 por token expirado vem com o header `X-Token-Expirado`, exposto via
+  CORS, para o frontend distinguir "sessão expirada" de "credencial inválida".
+
+**No frontend**, a sessão fica em `localStorage` e é revalidada na API a cada
+carregamento da página. Isso expõe o token a XSS; a alternativa mais segura
+(cookie `httpOnly`) exigiria API e frontend no mesmo site ou CORS com
+credenciais mais CSRF token, complexidade que não se paga neste estágio. O
+mitigador é a validade curta do token. A decisão está documentada em
+[armazenamentoDeSessao.ts](frontend/src/features/autenticacao/servicos/armazenamentoDeSessao.ts).
 
 ---
 
@@ -182,7 +241,7 @@ npm run typecheck   # apenas o TypeScript
 O roadmap completo está em [SDD.md](SDD.md). Progresso:
 
 - [x] **Sprint 0** — Setup do projeto
-- [ ] **Sprint 1** — Autenticação com JWT
+- [x] **Sprint 1** — Autenticação com JWT
 - [ ] **Sprint 2** — Layout base e sidebar
 - [ ] **Sprint 3** — Tema / dark mode
 - [ ] **Sprint 4** — CRUD de Clientes
