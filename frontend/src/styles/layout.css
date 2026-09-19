@@ -251,3 +251,19 @@
     display: none;
   }
 }
+
+/* --------------------------------------------------------------------------
+   Seletor de tema (Sprint 3)
+   -------------------------------------------------------------------------- */
+
+/* O PrimeReact nao tem estado de "item selecionado" em Menu popup, entao a
+   marcacao do tema em uso e nossa. */
+.seletor-de-tema__item--ativo > .p-menuitem-content > .p-menuitem-link {
+  background-color: color-mix(in srgb, var(--primary-color) 14%, transparent);
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.seletor-de-tema__item--ativo > .p-menuitem-content > .p-menuitem-link .p-menuitem-icon {
+  color: var(--primary-color);
+}

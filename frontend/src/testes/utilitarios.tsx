@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 
 import { Rotas } from '../app/rotas/Rotas';
+import { ProvedorDeTema } from '../app/tema/ProvedorDeTema';
 import { ProvedorDeAutenticacao } from '../features/autenticacao/contexto/ProvedorDeAutenticacao';
 import { autenticacaoService } from '../features/autenticacao/servicos/autenticacaoService';
 
@@ -33,41 +34,79 @@ export function renderizarAutenticado(rotaInicial = '/') {
   vi.spyOn(autenticacaoService, 'obterUsuarioAtual').mockResolvedValue(USUARIO_DE_TESTE);
 
   return render(
-    <MemoryRouter initialEntries={[rotaInicial]}>
-      <ProvedorDeAutenticacao>
-        <Rotas />
-      </ProvedorDeAutenticacao>
-    </MemoryRouter>,
+    <ProvedorDeTema>
+      <MemoryRouter initialEntries={[rotaInicial]}>
+        <ProvedorDeAutenticacao>
+          <Rotas />
+        </ProvedorDeAutenticacao>
+      </MemoryRouter>
+    </ProvedorDeTema>,
+  );
+}
+
+/** Renderiza a aplicacao sem sessao: cai na tela de login. */
+export function renderizarSemSessao(rotaInicial = '/login') {
+  return render(
+    <ProvedorDeTema>
+      <MemoryRouter initialEntries={[rotaInicial]}>
+        <ProvedorDeAutenticacao>
+          <Rotas />
+        </ProvedorDeAutenticacao>
+      </MemoryRouter>
+    </ProvedorDeTema>,
   );
 }
 
 /** Envolve qualquer arvore com roteador e sessao, para testes de componente. */
 export function comProvedores(filhos: ReactNode, rotaInicial = '/') {
   return render(
-    <MemoryRouter initialEntries={[rotaInicial]}>
-      <ProvedorDeAutenticacao>{filhos}</ProvedorDeAutenticacao>
-    </MemoryRouter>,
+    <ProvedorDeTema>
+      <MemoryRouter initialEntries={[rotaInicial]}>
+        <ProvedorDeAutenticacao>{filhos}</ProvedorDeAutenticacao>
+      </MemoryRouter>
+    </ProvedorDeTema>,
   );
 }
 
 /**
  * Instala um matchMedia no jsdom, que nao o implementa.
  *
- * Sem isso o hook de media query devolve false (tela larga) e nao ha como
- * testar o comportamento responsivo da sidebar.
+ * Responde por consulta, e nao com um valor unico: a aplicacao pergunta tanto
+ * pela largura da tela quanto por prefers-color-scheme, e um stub que
+ * respondesse a mesma coisa para as duas faria a sidebar e o tema andarem
+ * sempre juntos - mascarando bugs em vez de revelar.
  */
-export function simularLarguraDaTela(ehTelaEstreita: boolean) {
-  const ouvintes = new Set<(evento: MediaQueryListEvent) => void>();
+export function simularMidia(opcoes: {
+  telaEstreita?: boolean;
+  sistemaPrefereEscuro?: boolean;
+}) {
+  const { telaEstreita = false, sistemaPrefereEscuro = false } = opcoes;
+
+  const ouvintesPorConsulta = new Map<string, Set<() => void>>();
+
+  function responde(consulta: string): boolean {
+    if (consulta.includes('prefers-color-scheme: dark')) {
+      return sistemaPrefereEscuro;
+    }
+
+    if (consulta.includes('max-width')) {
+      return telaEstreita;
+    }
+
+    return false;
+  }
 
   const matchMedia = vi.fn((consulta: string) => ({
-    matches: ehTelaEstreita,
+    matches: responde(consulta),
     media: consulta,
     onchange: null,
-    addEventListener: (_tipo: string, ouvinte: (evento: MediaQueryListEvent) => void) => {
+    addEventListener: (_tipo: string, ouvinte: () => void) => {
+      const ouvintes = ouvintesPorConsulta.get(consulta) ?? new Set();
       ouvintes.add(ouvinte);
+      ouvintesPorConsulta.set(consulta, ouvintes);
     },
-    removeEventListener: (_tipo: string, ouvinte: (evento: MediaQueryListEvent) => void) => {
-      ouvintes.delete(ouvinte);
+    removeEventListener: (_tipo: string, ouvinte: () => void) => {
+      ouvintesPorConsulta.get(consulta)?.delete(ouvinte);
     },
     dispatchEvent: () => false,
     addListener: () => undefined,
@@ -80,5 +119,10 @@ export function simularLarguraDaTela(ehTelaEstreita: boolean) {
     value: matchMedia,
   });
 
-  return { matchMedia, ouvintes };
+  return { matchMedia, ouvintesPorConsulta };
+}
+
+/** Atalho para os testes que so se importam com a largura da tela. */
+export function simularLarguraDaTela(ehTelaEstreita: boolean) {
+  return simularMidia({ telaEstreita: ehTelaEstreita });
 }

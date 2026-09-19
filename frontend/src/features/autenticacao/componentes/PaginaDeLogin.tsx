@@ -5,6 +5,7 @@ import { InputText } from 'primereact/inputtext';
 import { Message } from 'primereact/message';
 import { Password } from 'primereact/password';
 
+import { SeletorDeTema } from '../../../app/tema/SeletorDeTema';
 import { ErroDaApi } from '../../../shared/api/erros';
 import { ambiente } from '../../../shared/config/ambiente';
 import { useAutenticacao } from '../hooks/useAutenticacao';
@@ -66,6 +67,12 @@ export function PaginaDeLogin() {
 
   return (
     <div className="login">
+      {/* A tela de login fica fora da area autenticada, entao precisa do seu
+          proprio seletor - sem ele nao daria para trocar de tema sem entrar. */}
+      <div className="login__tema">
+        <SeletorDeTema />
+      </div>
+
       <main className="login__cartao">
         <header className="login__cabecalho">
           <span className="login__marca" aria-hidden="true">

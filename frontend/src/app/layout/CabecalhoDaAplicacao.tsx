@@ -4,6 +4,7 @@ import { Button } from 'primereact/button';
 import { Menu } from 'primereact/menu';
 
 import { useAutenticacao } from '../../features/autenticacao/hooks/useAutenticacao';
+import { SeletorDeTema } from '../tema/SeletorDeTema';
 
 interface Props {
   titulo: string;
@@ -54,6 +55,8 @@ export function CabecalhoDaAplicacao({
       </div>
 
       <div className="cabecalho__direita">
+        <SeletorDeTema />
+
         <div className="cabecalho__identificacao">
           <strong>{usuario?.nome}</strong>
           <small>{usuario?.email}</small>

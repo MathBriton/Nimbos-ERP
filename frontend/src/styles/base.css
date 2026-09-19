@@ -23,8 +23,11 @@ body {
     'Segoe UI',
     Roboto,
     sans-serif;
-  background-color: var(--surface-ground);
-  color: var(--text-color);
+  /* O fallback so entra em cena enquanto o CSS do tema ainda nao carregou;
+     depois disso as variaveis do PrimeReact assumem. Sem ele, quem usa o modo
+     escuro veria um retangulo branco nos primeiros quadros. */
+  background-color: var(--surface-ground, var(--nimbus-fundo-inicial));
+  color: var(--text-color, var(--nimbus-texto-inicial));
   -webkit-font-smoothing: antialiased;
 }
 
@@ -32,6 +35,17 @@ body {
   --largura-da-sidebar: 16rem;
   --largura-da-sidebar-recolhida: 4.5rem;
   --altura-do-cabecalho: 3.75rem;
+
+  /* Espelham --surface-ground e --text-color do tema claro. */
+  --nimbus-fundo-inicial: #f9fafb;
+  --nimbus-texto-inicial: #4b5563;
+}
+
+/* data-tema e escrito no <html> pelo script inline do index.html, antes da
+   primeira pintura, e mantido em dia pelo ProvedorDeTema. */
+:root[data-tema='escuro'] {
+  --nimbus-fundo-inicial: #111827;
+  --nimbus-texto-inicial: rgba(255, 255, 255, 0.87);
 }
 
 /* Foco visivel e consistente em toda a aplicacao (navegacao por teclado). */

@@ -13,6 +13,13 @@
     var(--surface-ground);
 }
 
+/* Canto superior direito, sem competir com o cartao central. */
+.login__tema {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+}
+
 .login__cartao {
   width: 100%;
   max-width: 26rem;

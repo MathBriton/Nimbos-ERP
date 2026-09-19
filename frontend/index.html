@@ -5,6 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Nimbus ERP - micro ERP full stack (.NET 10 + React)." />
     <title>Nimbus ERP</title>
+
+    <!--
+      Tema resolvido antes de qualquer pintura.
+
+      Precisa ser inline e sincrono: se o tema so fosse aplicado quando o React
+      montasse, quem usa o modo escuro veria um lampejo branco a cada
+      carregamento. Por isso este bloco roda antes do bundle.
+
+      Mantido em JavaScript simples de proposito - ele executa antes de
+      qualquer modulo, entao nao pode importar nada de src/.
+      As chaves aqui espelham src/app/tema/tipos.ts.
+    -->
+    <script>
+      (function aplicarTemaInicial() {
+        var CHAVE = 'nimbus.tema';
+        var preferencia = 'sistema';
+
+        try {
+          var guardada = window.localStorage.getItem(CHAVE);
+          if (guardada === 'claro' || guardada === 'escuro' || guardada === 'sistema') {
+            preferencia = guardada;
+          }
+        } catch (erro) {
+          // Aba privada ou dados de site bloqueados: segue com "sistema".
+        }
+
+        var tema = preferencia;
+
+        if (preferencia === 'sistema') {
+          var prefereEscuro =
+            typeof window.matchMedia === 'function' &&
+            window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+          tema = prefereEscuro ? 'escuro' : 'claro';
+        }
+
+        document.documentElement.dataset.tema = tema;
+        document.documentElement.style.colorScheme = tema === 'escuro' ? 'dark' : 'light';
+
+        var link = document.createElement('link');
+        link.id = 'tema-do-app';
+        link.rel = 'stylesheet';
+        link.href = '/temas/' + tema + '/theme.css';
+        document.head.appendChild(link);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

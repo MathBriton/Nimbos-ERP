@@ -38,6 +38,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Temas do PrimeReact copiados de node_modules por scripts/copiar-temas.mjs
+frontend/public/temas/
+
 # Variaveis de ambiente (o .env.example fica versionado)
 .env
 .env.local

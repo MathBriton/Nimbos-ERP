@@ -7,8 +7,8 @@ infraestrutura completa em Docker.
 O planejamento completo (22 sprints, critérios de aceite e dependências entre
 módulos) está em [SDD.md](SDD.md).
 
-> **Status atual:** Sprint 2 concluída — aplicação navegável: sidebar com todos
-> os módulos do ERP, rotas protegidas e layout responsivo.
+> **Status atual:** Sprint 3 concluída — tema claro/escuro com troca instantânea,
+> preferência persistida e modo automático seguindo o sistema operacional.
 
 ---
 
@@ -174,7 +174,8 @@ dotnet ef database update \
 
 ```bash
 cd frontend
-npm run dev         # servidor de desenvolvimento
+npm run dev         # servidor de desenvolvimento (copia os temas antes)
+npm run temas       # copia os temas do PrimeReact para public/temas/
 npm run build       # type-check + build de produção
 npm run lint        # oxlint (falha com qualquer warning)
 npm run typecheck   # apenas o TypeScript
@@ -207,6 +208,32 @@ recolhida a só ícones (preferência guardada no `localStorage`). Abaixo disso 
 vira gaveta sobreposta, que fecha ao navegar, ao clicar fora e com `Esc`.
 Fechada, recebe `aria-hidden` e `inert`, para não ficar alcançável por leitor de
 tela nem por `Tab`.
+
+---
+
+## Tema
+
+Três modos, selecionáveis no cabeçalho e também na tela de login: **claro**,
+**escuro** e **sistema** (acompanha o sistema operacional, e é o padrão). A
+preferência fica no `localStorage`.
+
+Dois detalhes que fazem a diferença na prática:
+
+- **Sem flash ao carregar.** Um script inline no `index.html` resolve o tema e
+  insere o `<link>` do CSS antes da primeira pintura. Se isso ficasse para
+  quando o React montasse, quem usa modo escuro veria um lampejo branco a cada
+  carregamento.
+- **Sem flash ao trocar.** O CSS novo é inserido em paralelo e o antigo só é
+  removido quando o novo termina de carregar. Trocar o `href` do próprio
+  `<link>` deixaria a tela sem estilo por alguns quadros.
+
+Os temas do PrimeReact são copiados de `node_modules` para `public/temas/` por
+[scripts/copiar-temas.mjs](frontend/scripts/copiar-temas.mjs), que roda
+automaticamente antes de `npm run dev` e `npm run build`. A cópia é necessária
+porque o `theme.css` referencia as fontes por caminho relativo — um import com
+`?url` do Vite emitiria o CSS sem reescrever essas URLs e as fontes quebrariam.
+As fontes são idênticas entre os temas, então ficam numa pasta única: economiza
+~700 KB e evita que o navegador as baixe de novo a cada troca de tema.
 
 ---
 
@@ -270,7 +297,7 @@ O roadmap completo está em [SDD.md](SDD.md). Progresso:
 - [x] **Sprint 0** — Setup do projeto
 - [x] **Sprint 1** — Autenticação com JWT
 - [x] **Sprint 2** — Layout base e sidebar
-- [ ] **Sprint 3** — Tema / dark mode
+- [x] **Sprint 3** — Tema / dark mode
 - [ ] **Sprint 4** — CRUD de Clientes
 - [ ] **Sprint 5** — CRUD de Fornecedores
 - [ ] **Sprint 6** — CRUD de Usuários internos

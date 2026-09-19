@@ -2,8 +2,9 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { PrimeReactProvider } from 'primereact/api';
 
-// Ordem importa: tema -> core do PrimeReact -> icones -> estilos do projeto.
-import 'primereact/resources/themes/lara-light-indigo/theme.css';
+// O CSS do tema NAO e importado aqui: ele entra por um <link> trocavel em
+// tempo de execucao (ver src/app/tema/). O script inline do index.html ja o
+// aplicou antes desta linha rodar.
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import './styles/global.css';

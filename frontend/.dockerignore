@@ -9,6 +9,9 @@ dist/
 .vite/
 coverage/
 
+# Regenerado dentro da imagem pelo prebuild (npm run temas).
+public/temas/
+
 # Ambiente local nunca entra na imagem (a URL da API vem por ARG).
 .env
 .env.local

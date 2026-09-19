@@ -5,6 +5,7 @@ import { MemoryRouter } from 'react-router';
 
 import { App } from '../../app/App';
 import { Rotas } from '../../app/rotas/Rotas';
+import { ProvedorDeTema } from '../../app/tema/ProvedorDeTema';
 import { ErroDaApi } from '../../shared/api/erros';
 import { ProvedorDeAutenticacao } from './contexto/ProvedorDeAutenticacao';
 import { autenticacaoService } from './servicos/autenticacaoService';
@@ -23,11 +24,13 @@ function respostaDeLogin(minutosDeValidade = 60): LoginResposta {
 /** Monta a aplicacao em uma rota especifica, sem depender do BrowserRouter. */
 function renderizarEm(rotaInicial: string) {
   return render(
-    <MemoryRouter initialEntries={[rotaInicial]}>
-      <ProvedorDeAutenticacao>
-        <Rotas />
-      </ProvedorDeAutenticacao>
-    </MemoryRouter>,
+    <ProvedorDeTema>
+      <MemoryRouter initialEntries={[rotaInicial]}>
+        <ProvedorDeAutenticacao>
+          <Rotas />
+        </ProvedorDeAutenticacao>
+      </MemoryRouter>
+    </ProvedorDeTema>,
   );
 }
 
