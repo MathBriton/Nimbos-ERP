@@ -1,0 +1,207 @@
+/* Paginas de conteudo: status da plataforma, pagina inicial e placeholders. */
+
+/* --------------------------------------------------------------------------
+   Indicador de sessao sendo revalidada (Sprint 1)
+   -------------------------------------------------------------------------- */
+
+.carregando-sessao {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: var(--text-color-secondary);
+}
+
+/* --------------------------------------------------------------------------
+   Painel de status da plataforma (Sprint 0, tela definitiva na Sprint 22)
+   -------------------------------------------------------------------------- */
+
+.painel-status {
+  max-width: 1100px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.painel-status__cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.painel-status__cabecalho h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  letter-spacing: -0.01em;
+}
+
+.painel-status__subtitulo,
+.painel-status__detalhe {
+  color: var(--text-color-secondary);
+}
+
+.painel-status__subtitulo {
+  margin: 0.25rem 0 0;
+}
+
+.painel-status__detalhe {
+  font-size: 0.8125rem;
+}
+
+.painel-status__mensagem {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.painel-status__carregando {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-color-secondary);
+}
+
+.painel-status__grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.painel-status__linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.painel-status__rodape {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--surface-border);
+}
+
+/* --------------------------------------------------------------------------
+   Pagina inicial (Sprint 2; dashboard real na Sprint 12)
+   -------------------------------------------------------------------------- */
+
+.pagina-inicial {
+  max-width: 1100px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.pagina-inicial__saudacao {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+}
+
+.pagina-inicial__texto {
+  margin: 0 0 1rem;
+  color: var(--text-color-secondary);
+}
+
+.pagina-inicial__atalhos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.atalho {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.375rem;
+  padding: 1rem;
+  background-color: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: 10px;
+  color: var(--text-color);
+  text-decoration: none;
+  transition:
+    border-color 0.12s ease,
+    transform 0.12s ease;
+}
+
+.atalho:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+}
+
+.atalho__icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 8px;
+  background-color: color-mix(in srgb, var(--primary-color) 14%, transparent);
+  color: var(--primary-color);
+}
+
+.atalho__rotulo {
+  font-weight: 600;
+}
+
+.atalho__sprint {
+  color: var(--text-color-secondary);
+}
+
+/* --------------------------------------------------------------------------
+   Placeholder dos modulos das proximas sprints (Sprint 2)
+   -------------------------------------------------------------------------- */
+
+.em-construcao {
+  max-width: 44rem;
+}
+
+.em-construcao__cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.em-construcao__icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 10px;
+  background-color: color-mix(in srgb, var(--primary-color) 14%, transparent);
+  color: var(--primary-color);
+  font-size: 1.5rem;
+}
+
+.em-construcao__titulo {
+  margin: 0 0 0.375rem;
+  font-size: 1.25rem;
+}
+
+.em-construcao__descricao {
+  margin: 0 0 1.25rem;
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+.em-construcao__rodape {
+  margin: 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--surface-border);
+  color: var(--text-color-secondary);
+  font-size: 0.875rem;
+}
+
+.em-construcao__rodape code {
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+  background-color: var(--surface-hover);
+}

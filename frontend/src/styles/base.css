@@ -1,0 +1,52 @@
+/* Reset e fundamentos.
+   As cores vem do tema do PrimeReact (--surface-*, --text-color), para que a
+   troca de tema da Sprint 3 funcione sem reescrever nenhuma regra daqui. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  background-color: var(--surface-ground);
+  color: var(--text-color);
+  -webkit-font-smoothing: antialiased;
+}
+
+:root {
+  --largura-da-sidebar: 16rem;
+  --largura-da-sidebar-recolhida: 4.5rem;
+  --altura-do-cabecalho: 3.75rem;
+}
+
+/* Foco visivel e consistente em toda a aplicacao (navegacao por teclado). */
+:where(a, button, [tabindex]):focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Respeita quem pediu menos animacao no sistema operacional. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

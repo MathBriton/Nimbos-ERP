@@ -20,9 +20,11 @@ const rotuloPorStatus: Record<StatusDeSaude, string> = {
 };
 
 /**
- * Tela de status da plataforma: prova, de ponta a ponta, que o frontend
- * fala com a API e que a API fala com o SQL Server.
- * E o critério de aceite da Sprint 0.
+ * Tela de status da plataforma: prova, de ponta a ponta, que o frontend fala
+ * com a API e que a API fala com o SQL Server.
+ *
+ * Nasceu como criterio de aceite da Sprint 0 e evolui para o dashboard de
+ * monitoramento da Sprint 22.
  */
 export function PainelDeStatus() {
   const { identificacao, saude, carregando, erro, reconsultar } = useSaudeDaPlataforma();
@@ -31,9 +33,10 @@ export function PainelDeStatus() {
     <div className="painel-status">
       <header className="painel-status__cabecalho">
         <div>
-          <h1>Nimbus ERP</h1>
+          {/* h2 e nao h1: o h1 da pagina e o titulo do cabecalho do layout. */}
+          <h2>Status da plataforma</h2>
           <p className="painel-status__subtitulo">
-            Status da plataforma &mdash; Sprint 0 (setup do projeto)
+            Estado da API e das dependencias, revalidado a cada 15 segundos.
           </p>
         </div>
 

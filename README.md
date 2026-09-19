@@ -7,9 +7,8 @@ infraestrutura completa em Docker.
 O planejamento completo (22 sprints, critérios de aceite e dependências entre
 módulos) está em [SDD.md](SDD.md).
 
-> **Status atual:** Sprint 1 concluída — autenticação JWT funcionando ponta a
-> ponta: login na tela React, rotas protegidas e expiração de token forçando
-> novo login.
+> **Status atual:** Sprint 2 concluída — aplicação navegável: sidebar com todos
+> os módulos do ERP, rotas protegidas e layout responsivo.
 
 ---
 
@@ -119,6 +118,8 @@ Nimbus-ERP/
 └── frontend/
     └── src/
         ├── app/                 Bootstrap: providers, layout, rotas
+        │   ├── layout/          Sidebar, cabeçalho e a definição do menu
+        │   └── rotas/           Mapa de rotas, gerado a partir do menu
         ├── features/            Um diretório por módulo do ERP
         │   └── <modulo>/
         │       ├── componentes/
@@ -183,6 +184,32 @@ npm run test:watch  # Vitest em modo observador
 
 ---
 
+## Navegação
+
+O menu é declarado em um único lugar,
+[app/layout/menu.ts](frontend/src/app/layout/menu.ts), e a sidebar **e** as rotas
+são geradas a partir dele. Adicionar um módulo é mexer em um arquivo só, sem
+risco de sidebar e roteador saírem de sincronia — e todo caminho que ainda não
+tem tela recebe automaticamente um placeholder informando em qual sprint ele
+chega.
+
+| Seção | Módulos |
+|---|---|
+| — | Dashboard |
+| Cadastros | Clientes, Fornecedores, Produtos, Usuários |
+| Operação | Estoque, Pedidos de compra, Pedidos de venda |
+| Financeiro | Contas |
+| Análise | Relatórios, Auditoria |
+| Sistema | Configurações, Status |
+
+**Responsividade:** acima de 960px a sidebar ocupa espaço fixo e pode ser
+recolhida a só ícones (preferência guardada no `localStorage`). Abaixo disso ela
+vira gaveta sobreposta, que fecha ao navegar, ao clicar fora e com `Esc`.
+Fechada, recebe `aria-hidden` e `inert`, para não ficar alcançável por leitor de
+tela nem por `Tab`.
+
+---
+
 ## Autenticação
 
 Fluxo stateless com JWT Bearer:
@@ -242,7 +269,7 @@ O roadmap completo está em [SDD.md](SDD.md). Progresso:
 
 - [x] **Sprint 0** — Setup do projeto
 - [x] **Sprint 1** — Autenticação com JWT
-- [ ] **Sprint 2** — Layout base e sidebar
+- [x] **Sprint 2** — Layout base e sidebar
 - [ ] **Sprint 3** — Tema / dark mode
 - [ ] **Sprint 4** — CRUD de Clientes
 - [ ] **Sprint 5** — CRUD de Fornecedores

@@ -1,54 +1,118 @@
-import { Outlet } from 'react-router';
-import { Avatar } from 'primereact/avatar';
-import { Button } from 'primereact/button';
+import { useCallback, useEffect, useState } from 'react';
+import { Outlet, useLocation } from 'react-router';
 
-import { useAutenticacao } from '../../features/autenticacao/hooks/useAutenticacao';
-import { ambiente } from '../../shared/config/ambiente';
+import { useArmazenamentoLocal } from '../../shared/hooks/useArmazenamentoLocal';
+import { useEhTelaEstreita } from '../../shared/hooks/useConsultaDeMidia';
+import { BarraLateral } from './BarraLateral';
+import { CabecalhoDaAplicacao } from './CabecalhoDaAplicacao';
+import { itemPorCaminho } from './menu';
+
+const CHAVE_DA_SIDEBAR = 'nimbus.sidebar.recolhida';
+
+/** Estado da gaveta, com a rota em que ela foi aberta. */
+interface EstadoDaGaveta {
+  aberta: boolean;
+  /** Caminho vigente quando a gaveta foi aberta. */
+  caminho: string;
+}
 
 /**
- * Casca da area logada: header com o usuario da sessao e botao de sair.
+ * Casca da area logada: sidebar a esquerda, cabecalho no topo e conteudo da
+ * rota no meio.
  *
- * Deliberadamente minimo nesta sprint. A Sprint 2 substitui isto pelo layout
- * definitivo, com sidebar de navegacao e comportamento responsivo.
+ * Comportamento responsivo:
+ * - Tela larga: a sidebar ocupa espaco fixo e pode ser recolhida a so icones.
+ *   A preferencia fica no localStorage.
+ * - Tela estreita: a sidebar vira gaveta sobreposta, aberta pelo botao do
+ *   cabecalho e fechada ao navegar, ao clicar fora ou com Esc.
  */
 export function LayoutAutenticado() {
-  const { usuario, sair } = useAutenticacao();
+  const ehTelaEstreita = useEhTelaEstreita();
+  const localizacao = useLocation();
 
-  const iniciais = (usuario?.nome ?? '?')
-    .split(' ')
-    .filter((parte) => parte.length > 0)
-    .slice(0, 2)
-    .map((parte) => parte[0]?.toUpperCase() ?? '')
-    .join('');
+  const [recolhida, definirRecolhida] = useArmazenamentoLocal(CHAVE_DA_SIDEBAR, false);
+  const [gaveta, definirGaveta] = useState<EstadoDaGaveta>({
+    aberta: false,
+    caminho: localizacao.pathname,
+  });
+
+  /**
+   * A gaveta so conta como aberta na tela estreita e na rota em que foi aberta.
+   *
+   * Derivar isso no render (em vez de fechar a gaveta dentro de um useEffect)
+   * resolve de uma vez tres situacoes: navegacao pela sidebar, navegacao que
+   * nao passa por ela (botao voltar do navegador, redirect programatico) e
+   * volta para tela larga com a gaveta aberta - que de outro modo deixaria a
+   * cortina presa sobre o conteudo.
+   */
+  const gavetaAberta =
+    gaveta.aberta && ehTelaEstreita && gaveta.caminho === localizacao.pathname;
+
+  const fecharGaveta = useCallback(() => {
+    definirGaveta((anterior) => ({ ...anterior, aberta: false }));
+  }, []);
+
+  const alternarGaveta = useCallback(() => {
+    definirGaveta((anterior) => ({
+      aberta: !anterior.aberta,
+      caminho: localizacao.pathname,
+    }));
+  }, [localizacao.pathname]);
+
+  // Esc fecha a gaveta, como se espera de qualquer overlay.
+  useEffect(() => {
+    if (!gavetaAberta) {
+      return;
+    }
+
+    function aoTeclar(evento: KeyboardEvent) {
+      if (evento.key === 'Escape') {
+        fecharGaveta();
+      }
+    }
+
+    window.addEventListener('keydown', aoTeclar);
+    return () => window.removeEventListener('keydown', aoTeclar);
+  }, [gavetaAberta, fecharGaveta]);
+
+  const item = itemPorCaminho(localizacao.pathname);
+  const titulo = item?.rotulo ?? 'Nimbus ERP';
+
+  const classes = [
+    'layout',
+    recolhida && !ehTelaEstreita ? 'layout--sidebar-recolhida' : '',
+    ehTelaEstreita ? 'layout--estreito' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <div className="layout">
-      <header className="layout__header">
-        <div className="layout__marca">
-          <i className="pi pi-cloud" aria-hidden="true" />
-          <span>{ambiente.nomeDaAplicacao}</span>
-        </div>
+    <div className={classes}>
+      <BarraLateral
+        recolhida={recolhida}
+        ehTelaEstreita={ehTelaEstreita}
+        abertaNoCelular={gavetaAberta}
+        aoAlternarRecolhida={() => definirRecolhida((anterior) => !anterior)}
+        aoFechar={fecharGaveta}
+      />
 
-        <div className="layout__usuario">
-          <Avatar label={iniciais} shape="circle" />
-          <div className="layout__identificacao">
-            <strong>{usuario?.nome}</strong>
-            <small>{usuario?.email}</small>
-          </div>
+      {/* Cortina do overlay: clicar fora fecha a gaveta. */}
+      {gavetaAberta && (
+        <div className="layout__cortina" onClick={fecharGaveta} aria-hidden="true" />
+      )}
 
-          <Button
-            label="Sair"
-            icon="pi pi-sign-out"
-            onClick={sair}
-            severity="secondary"
-            text
-          />
-        </div>
-      </header>
+      <div className="layout__painel">
+        <CabecalhoDaAplicacao
+          titulo={titulo}
+          ehTelaEstreita={ehTelaEstreita}
+          menuAberto={gavetaAberta}
+          aoAlternarMenu={alternarGaveta}
+        />
 
-      <main className="layout__conteudo">
-        <Outlet />
-      </main>
+        <main className="layout__conteudo">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }

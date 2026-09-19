@@ -53,9 +53,9 @@ describe('fluxo de autenticacao', () => {
     await usuario.type(screen.getByLabelText(/senha/i), 'Admin123!');
     await usuario.click(screen.getByRole('button', { name: /entrar/i }));
 
-    // Chegou na area logada: o header traz o nome do usuario e o botao de sair.
+    // Chegou na area logada: saudacao na pagina inicial e menu de navegacao.
     expect(await screen.findByText(/ola, administrador/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /sair/i })).toBeInTheDocument();
+    expect(screen.getByRole('navigation', { name: /menu principal/i })).toBeInTheDocument();
 
     expect(login).toHaveBeenCalledWith({ email: 'admin@erp.com', senha: 'Admin123!' });
   });
@@ -73,8 +73,10 @@ describe('fluxo de autenticacao', () => {
     await usuario.click(screen.getByRole('button', { name: /entrar/i }));
 
     expect(await screen.findByText(/e-mail ou senha invalidos/i)).toBeInTheDocument();
-    // Continua no login, sem area logada.
-    expect(screen.queryByRole('button', { name: /sair/i })).not.toBeInTheDocument();
+    // Continua no login: a area logada nunca chegou a montar.
+    expect(
+      screen.queryByRole('navigation', { name: /menu principal/i }),
+    ).not.toBeInTheDocument();
   });
 
   it('mostra os erros de validacao por campo devolvidos pela API', async () => {
@@ -104,10 +106,12 @@ describe('fluxo de autenticacao', () => {
     await usuario.type(screen.getByLabelText(/senha/i), 'Admin123!');
     await usuario.click(screen.getByRole('button', { name: /entrar/i }));
 
-    await screen.findByRole('button', { name: /sair/i });
+    await screen.findByText(/ola, administrador/i);
     expect(window.localStorage.getItem('nimbus.sessao')).not.toBeNull();
 
-    await usuario.click(screen.getByRole('button', { name: /sair/i }));
+    // "Sair" vive no menu suspenso do avatar, no cabecalho.
+    await usuario.click(screen.getByRole('button', { name: /conta de administrador/i }));
+    await usuario.click(await screen.findByText('Sair'));
 
     expect(await screen.findByLabelText(/senha/i)).toBeInTheDocument();
     expect(window.localStorage.getItem('nimbus.sessao')).toBeNull();

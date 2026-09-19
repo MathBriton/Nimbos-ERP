@@ -1,0 +1,253 @@
+/* Casca da area logada: sidebar + cabecalho + conteudo. */
+
+.layout {
+  display: flex;
+  min-height: 100%;
+}
+
+.layout__painel {
+  flex: 1 1 auto;
+  /* min-width: 0 impede que uma tabela larga estique o painel e quebre o
+     layout inteiro - o overflow tem de ficar dentro do conteudo. */
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.layout__conteudo {
+  flex: 1 1 auto;
+  padding: 1.5rem 1.25rem 2.5rem;
+}
+
+/* Cortina do overlay em telas estreitas. */
+.layout__cortina {
+  position: fixed;
+  inset: 0;
+  z-index: 15;
+  background-color: rgb(0 0 0 / 45%);
+}
+
+/* --------------------------------------------------------------------------
+   Barra lateral
+   -------------------------------------------------------------------------- */
+
+.barra-lateral {
+  flex: 0 0 auto;
+  width: var(--largura-da-sidebar);
+  /* Acompanha a rolagem da pagina e rola sozinha quando o menu cresce. */
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--surface-card);
+  border-right: 1px solid var(--surface-border);
+  transition: width 0.18s ease;
+}
+
+.barra-lateral--recolhida {
+  width: var(--largura-da-sidebar-recolhida);
+}
+
+.barra-lateral__topo {
+  flex: 0 0 auto;
+  height: var(--altura-do-cabecalho);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0 0.5rem 0 1rem;
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.barra-lateral__marca {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  font-weight: 700;
+  color: var(--primary-color);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.barra-lateral__marca .pi {
+  font-size: 1.25rem;
+  flex: 0 0 auto;
+}
+
+.barra-lateral--recolhida .barra-lateral__topo {
+  /* Sem o rotulo da marca, o botao de expandir fica centralizado. */
+  justify-content: center;
+  padding: 0 0.25rem;
+}
+
+.barra-lateral--recolhida .barra-lateral__marca {
+  display: none;
+}
+
+.barra-lateral__grupos {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 0.75rem 0.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.barra-lateral__grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.barra-lateral__titulo-do-grupo {
+  margin: 0;
+  padding: 0 0.75rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-color-secondary);
+}
+
+.barra-lateral__lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.barra-lateral__link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  color: var(--text-color);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.12s ease;
+}
+
+.barra-lateral__link .pi {
+  flex: 0 0 auto;
+  width: 1.25rem;
+  font-size: 1.0625rem;
+  text-align: center;
+  color: var(--text-color-secondary);
+}
+
+.barra-lateral__link:hover {
+  background-color: var(--surface-hover);
+}
+
+.barra-lateral__link--ativo {
+  background-color: color-mix(in srgb, var(--primary-color) 14%, transparent);
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.barra-lateral__link--ativo .pi {
+  color: var(--primary-color);
+}
+
+.barra-lateral__rotulo {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.barra-lateral--recolhida .barra-lateral__link {
+  justify-content: center;
+  padding: 0.625rem 0;
+}
+
+/* Recolhida, o rotulo sai da tela; o nome aparece via tooltip do PrimeReact. */
+.barra-lateral--recolhida .barra-lateral__rotulo {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Sidebar como gaveta sobreposta (telas estreitas)
+   -------------------------------------------------------------------------- */
+
+.barra-lateral--sobreposta {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 20;
+  width: var(--largura-da-sidebar);
+  /* Fora da tela por padrao; translate em vez de left para animar na GPU. */
+  transform: translateX(-100%);
+  transition: transform 0.2s ease;
+  box-shadow: 4px 0 24px rgb(0 0 0 / 18%);
+}
+
+.barra-lateral--sobreposta.barra-lateral--aberta {
+  transform: translateX(0);
+}
+
+/* --------------------------------------------------------------------------
+   Cabecalho
+   -------------------------------------------------------------------------- */
+
+.cabecalho {
+  flex: 0 0 auto;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  min-height: var(--altura-do-cabecalho);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 1.25rem;
+  background-color: var(--surface-card);
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.cabecalho__esquerda,
+.cabecalho__direita {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.cabecalho__titulo {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cabecalho__identificacao {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  text-align: right;
+}
+
+.cabecalho__identificacao small {
+  color: var(--text-color-secondary);
+}
+
+.cabecalho__botao-do-avatar {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  line-height: 0;
+}
+
+/* No celular, o e-mail competiria com o botao do avatar. */
+@media (max-width: 640px) {
+  .cabecalho__identificacao {
+    display: none;
+  }
+}
