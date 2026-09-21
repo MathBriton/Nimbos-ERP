@@ -60,6 +60,7 @@ public static class DependencyInjection
         });
 
         servicos.AddScoped<IRepositorioDeUsuarios, RepositorioDeUsuarios>();
+        servicos.AddScoped<IRepositorioDeClientes, RepositorioDeClientes>();
 
         servicos
             .AddHealthChecks()

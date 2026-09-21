@@ -2,10 +2,13 @@ namespace Nimbus.Application.Common.Modelos;
 
 /// <summary>
 /// Parametros de paginacao e busca aceitos pelas listagens.
+///
+/// Nao e selada: as consultas de cada modulo herdam daqui para acrescentar
+/// seus proprios filtros sem reimplementar a normalizacao.
 /// Os valores sao normalizados para blindar a API contra
 /// requisicoes com pagina zero/negativa ou tamanho abusivo.
 /// </summary>
-public sealed record ConsultaPaginada
+public record ConsultaPaginada
 {
     public const int TamanhoMaximoDaPagina = 100;
     public const int TamanhoPadraoDaPagina = 20;

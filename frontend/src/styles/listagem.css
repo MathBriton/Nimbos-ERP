@@ -1,0 +1,149 @@
+/* Listagens e formularios dos cadastros (Sprint 4 em diante).
+   Escrito uma vez aqui para Fornecedores, Produtos e Usuarios reaproveitarem. */
+
+.listagem {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.listagem__barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.listagem__filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.listagem__busca {
+  min-width: min(22rem, 100%);
+}
+
+.listagem__busca input {
+  width: 100%;
+}
+
+.listagem__aviso {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+/* Duas linhas na mesma celula: valor principal e complemento discreto. */
+.listagem__celula-principal {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.listagem__celula-principal small {
+  color: var(--text-color-secondary);
+}
+
+.listagem__vazio {
+  color: var(--text-color-secondary);
+}
+
+.listagem__acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.125rem;
+}
+
+/* A tabela rola dentro do proprio container; o layout da pagina nao estica. */
+.listagem .p-datatable-wrapper {
+  overflow-x: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Formulario em dialogo
+   -------------------------------------------------------------------------- */
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.formulario__aviso {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.formulario__grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1rem;
+}
+
+.formulario__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-width: 0;
+}
+
+/* Campos longos (nome, logradouro) ocupam duas colunas quando ha espaco. */
+.formulario__campo--dobro {
+  grid-column: span 2;
+}
+
+@media (max-width: 640px) {
+  .formulario__campo--dobro {
+    grid-column: span 1;
+  }
+}
+
+.formulario__campo label {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.formulario__campo :is(input, textarea, .p-dropdown) {
+  width: 100%;
+}
+
+.formulario__obrigatorio {
+  color: var(--red-500);
+}
+
+.formulario__erro {
+  color: var(--red-500);
+}
+
+.formulario__secao {
+  margin: 0;
+  padding: 1rem;
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+}
+
+.formulario__secao legend {
+  padding: 0 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.formulario__ajuda {
+  margin: 0 0 1rem;
+  color: var(--text-color-secondary);
+  font-size: 0.8125rem;
+}
+
+.formulario__ativo {
+  align-self: flex-start;
+}
+
+.formulario__rodape {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--surface-border);
+}

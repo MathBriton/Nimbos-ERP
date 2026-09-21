@@ -7,8 +7,9 @@ infraestrutura completa em Docker.
 O planejamento completo (22 sprints, critérios de aceite e dependências entre
 módulos) está em [SDD.md](SDD.md).
 
-> **Status atual:** Sprint 3 concluída — tema claro/escuro com troca instantânea,
-> preferência persistida e modo automático seguindo o sistema operacional.
+> **Status atual:** Sprint 4 concluída — primeiro módulo de negócio no ar: CRUD
+> de Clientes ponta a ponta, com validação de CPF/CNPJ, busca, filtros e
+> paginação no servidor.
 
 ---
 
@@ -185,6 +186,37 @@ npm run test:watch  # Vitest em modo observador
 
 ---
 
+## Cadastro de Clientes
+
+Primeiro módulo de negócio, e o **molde que Fornecedores, Usuários e Produtos
+replicam** nas Sprints 5 a 7. O padrão estabelecido aqui:
+
+| Camada | O que foi definido |
+|---|---|
+| Domínio | Entidade com invariantes + objetos de valor (`Documento`, `Endereco`) |
+| Aplicação | Serviço com listar/obter/criar/atualizar/excluir e DTOs por operação |
+| Persistência | Repositório com filtro, ordenação por enum e paginação em SQL |
+| API | `GET/POST/PUT/DELETE` em `/api/clientes`, todos autenticados |
+| Frontend | DataTable com paginação no servidor + formulário em diálogo |
+
+**Regras de negócio que valem a pena conhecer:**
+
+- **CPF e CNPJ são validados por dígito verificador**, não por formato. O
+  algoritmo roda nas duas pontas: no navegador para retorno imediato, no
+  domínio como autoridade final. Documentos com todos os dígitos iguais
+  (`111.111.111-11`) são rejeitados, embora passem no cálculo.
+- **O documento é guardado sem máscara.** `529.982.247-25` e `52998224725` são
+  o mesmo cliente, e a checagem de duplicidade normaliza antes de comparar.
+- **Endereço é tudo ou nada.** Ou nenhum campo, ou o conjunto que o torna
+  utilizável — meio endereço não serve para entrega nem para nota fiscal.
+- **Nome fantasia só existe para pessoa jurídica**, inclusive ao trocar o tipo
+  de um cadastro já existente.
+- **Exclusão é lógica.** O registro sai das listagens mas permanece na tabela.
+  O índice único do documento é filtrado por `Excluido = 0`, então o CPF de um
+  cliente excluído pode ser recadastrado.
+
+---
+
 ## Navegação
 
 O menu é declarado em um único lugar,
@@ -298,7 +330,7 @@ O roadmap completo está em [SDD.md](SDD.md). Progresso:
 - [x] **Sprint 1** — Autenticação com JWT
 - [x] **Sprint 2** — Layout base e sidebar
 - [x] **Sprint 3** — Tema / dark mode
-- [ ] **Sprint 4** — CRUD de Clientes
+- [x] **Sprint 4** — CRUD de Clientes
 - [ ] **Sprint 5** — CRUD de Fornecedores
 - [ ] **Sprint 6** — CRUD de Usuários internos
 - [ ] **Sprint 7** — CRUD de Produtos

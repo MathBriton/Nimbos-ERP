@@ -37,6 +37,14 @@ public sealed class ManipuladorGlobalDeExcecoes : IExceptionHandler
                 StatusCodes.Status401Unauthorized,
                 "Falha na autenticacao",
                 autenticacao.Message),
+            ExcecaoDeRecursoNaoEncontrado naoEncontrado => (
+                StatusCodes.Status404NotFound,
+                "Recurso nao encontrado",
+                naoEncontrado.Message),
+            ExcecaoDeConflito conflito => (
+                StatusCodes.Status409Conflict,
+                "Conflito com dados existentes",
+                conflito.Message),
             ExcecaoDeDominio dominio => (
                 StatusCodes.Status400BadRequest,
                 "Regra de negocio violada",

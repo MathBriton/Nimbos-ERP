@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Nimbus.Application.Autenticacao;
+using Nimbus.Application.Clientes;
 
 namespace Nimbus.Application;
 
@@ -14,6 +15,7 @@ public static class DependencyInjection
         ArgumentNullException.ThrowIfNull(servicos);
 
         servicos.AddScoped<ServicoDeAutenticacao>();
+        servicos.AddScoped<ServicoDeClientes>();
 
         return servicos;
     }

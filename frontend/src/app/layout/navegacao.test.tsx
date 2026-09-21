@@ -81,10 +81,11 @@ describe('navegacao pela sidebar', () => {
     renderizarAutenticado();
     await layoutPronto();
 
-    await usuario.click(within(barraLateral()).getByRole('link', { name: 'Clientes' }));
+    // Fornecedores segue como placeholder; Clientes ganhou tela real na Sprint 4.
+    await usuario.click(within(barraLateral()).getByRole('link', { name: 'Fornecedores' }));
 
-    expect(await screen.findByText(/planejado para a sprint 4/i)).toBeInTheDocument();
-    expect(screen.getByText(/cadastro de clientes/i)).toBeInTheDocument();
+    expect(await screen.findByText(/planejado para a sprint 5/i)).toBeInTheDocument();
+    expect(screen.getByText(/cadastro de fornecedores/i)).toBeInTheDocument();
   });
 
   it('um caminho desconhecido cai na pagina inicial', async () => {

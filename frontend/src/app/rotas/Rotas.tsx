@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router';
 
 import { PaginaDeLogin } from '../../features/autenticacao/componentes/PaginaDeLogin';
 import { RotaProtegida } from '../../features/autenticacao/componentes/RotaProtegida';
+import { PaginaDeClientes } from '../../features/clientes/componentes/PaginaDeClientes';
 import { PaginaInicial } from '../../features/dashboard/componentes/PaginaInicial';
 import { PainelDeStatus } from '../../features/plataforma/componentes/PainelDeStatus';
 import { PaginaEmConstrucao } from '../../shared/componentes/PaginaEmConstrucao';
@@ -16,6 +17,7 @@ import { itensDoMenu } from '../layout/menu';
  */
 const telasImplementadas: Record<string, ReactNode> = {
   '/': <PaginaInicial />,
+  '/clientes': <PaginaDeClientes />,
   '/status': <PainelDeStatus />,
 };
 
